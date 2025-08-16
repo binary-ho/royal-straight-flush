@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Straight Flush</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 40px 0;
+            min-height: 140px;
+            align-items: center;
+        }
+
+        .card {
+            width: 80px;
+            height: 120px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: black;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card.spade {
+            color: black;
+        }
+
+        .card .rank {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .card .suit {
+            font-size: 24px;
+        }
+
+        .card.hidden {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .card.dealing {
+            animation: dealCard 0.5s ease-in-out;
+        }
+
+        @keyframes dealCard {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) rotateY(180deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateY(0deg);
+            }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .shuffle-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .draw-btn {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .status {
+            margin: 20px 0;
+            font-size: 18px;
+            min-height: 25px;
+            font-weight: bold;
+        }
+
+        .shuffle-animation {
+            color: #ffd700;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🃏 Royal Straight Flush 🃏</h1>
+        
+        <div class="cards-container" id="cardsContainer">
+            <div class="card spade" data-rank="10">
+                <div class="rank">10</div>
+                <div class="suit">♠</div>
+            </div>
+            <div class="card spade" data-rank="J">
+                <div class="rank">J</div>
+                <div class="suit">♠</div>
+            </div>
+            <div class="card spade" data-rank="Q">
+                <div class="rank">Q</div>
+                <div class="suit">♠</div>
+            </div>
+            <div class="card spade" data-rank="K">
+                <div class="rank">K</div>
+                <div class="suit">♠</div>
+            </div>
+            <div class="card spade" data-rank="A">
+                <div class="rank">A</div>
+                <div class="suit">♠</div>
+            </div>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <div class="buttons">
+            <button class="shuffle-btn" id="shuffleBtn" onclick="shuffle()">셔플</button>
+            <button class="draw-btn" id="drawBtn" onclick="drawCard()" disabled>뽑기</button>
+        </div>
+    </div>
+
+    <script>
+        const cards = [
+            { rank: '10', suit: '♠' },
+            { rank: 'J', suit: '♠' },
+            { rank: 'Q', suit: '♠' },
+            { rank: 'K', suit: '♠' },
+            { rank: 'A', suit: '♠' }
+        ];
+
+        let shuffledCards = [...cards];
+        let currentCardIndex = 0;
+        let isShuffling = false;
+
+        const cardsContainer = document.getElementById('cardsContainer');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const drawBtn = document.getElementById('drawBtn');
+        const status = document.getElementById('status');
+
+        function updateButtons() {
+            const visibleCards = document.querySelectorAll('.card:not(.hidden)').length;
+            shuffleBtn.disabled = visibleCards !== 5 || isShuffling;
+            drawBtn.disabled = visibleCards === 5 || isShuffling;
+        }
+
+        function shuffle() {
+            if (isShuffling) return;
+            
+            isShuffling = true;
+            status.innerHTML = '<span class="shuffle-animation">섞습니다...</span>';
+            
+            // 카드 숨기기
+            const cardElements = document.querySelectorAll('.card');
+            cardElements.forEach(card => {
+                card.classList.add('hidden');
+            });
+
+            // 카드 순서 섞기
+            shuffledCards = [...cards];
+            for (let i = shuffledCards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledCards[i], shuffledCards[j]] = [shuffledCards[j], shuffledCards[i]];
+            }
+
+            currentCardIndex = 0;
+
+            setTimeout(() => {
+                isShuffling = false;
+                status.textContent = '뽑기 버튼을 눌러 카드를 확인하세요!';
+                updateButtons();
+            }, 1500);
+        }
+
+        function drawCard() {
+            if (currentCardIndex >= shuffledCards.length || isShuffling) return;
+
+            const card = shuffledCards[currentCardIndex];
+            const cardElement = document.querySelectorAll('.card')[currentCardIndex];
+            
+            // 카드 내용 업데이트
+            cardElement.querySelector('.rank').textContent = card.rank;
+            cardElement.querySelector('.suit').textContent = card.suit;
+            cardElement.setAttribute('data-rank', card.rank);
+            
+            // 카드 보이기
+            cardElement.classList.remove('hidden');
+            cardElement.classList.add('dealing');
+            
+            setTimeout(() => {
+                cardElement.classList.remove('dealing');
+            }, 500);
+
+            currentCardIndex++;
+
+            if (currentCardIndex >= shuffledCards.length) {
+                status.textContent = '🎉 Royal Straight Flush 완성! 🎉';
+            } else {
+                status.textContent = `${currentCardIndex}/5 카드 뽑음`;
+            }
+
+            updateButtons();
+        }
+
+        // 초기 버튼 상태 설정
+        updateButtons();
+    </script>
+</body>
+</html>
