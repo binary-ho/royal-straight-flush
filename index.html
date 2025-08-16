@@ -31,42 +31,122 @@
         .cards-container {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
             margin: 40px 0;
-            min-height: 140px;
+            min-height: 180px;
             align-items: center;
+            perspective: 1000px;
         }
 
         .card {
-            width: 80px;
-            height: 120px;
-            background: white;
-            border-radius: 10px;
-            border: 2px solid #333;
+            width: 110px;
+            height: 160px;
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             font-size: 16px;
-            font-weight: bold;
-            color: black;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            font-weight: 600;
+            color: #1e293b;
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            padding: 12px;
+        }
+
+        .card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 
+                0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: rgba(99, 102, 241, 0.3);
         }
 
         .card.spade {
-            color: black;
+            color: #1e293b;
         }
 
         .card .rank {
-            font-size: 18px;
-            margin-bottom: 5px;
+            font-size: 28px;
+            font-weight: 900;
+            font-family: 'Arial Black', 'Helvetica', sans-serif;
+            color: #1e293b;
+            text-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.1),
+                0 1px 2px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #1e293b 0%, #475569 50%, #1e293b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+            z-index: 2;
+            letter-spacing: -0.5px;
         }
 
         .card .suit {
+            font-size: 36px;
+            color: #1f2937;
+            text-shadow: 
+                0 2px 6px rgba(0, 0, 0, 0.15),
+                0 1px 3px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+        }
+
+        .card .corner-rank {
+            position: absolute;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.1;
+            color: #475569;
+            text-align: center;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .card .corner-rank.top-left {
+            top: 6px;
+            left: 6px;
+        }
+
+        .card .corner-rank.bottom-right {
+            bottom: 6px;
+            right: 6px;
+            transform: rotate(180deg);
+        }
+
+        .card .card-icon {
+            position: absolute;
+            bottom: 20px;
             font-size: 24px;
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .card[data-rank="10"] .card-icon::before {
+            content: "⚡";
+        }
+
+        .card[data-rank="J"] .card-icon::before {
+            content: "👑";
+        }
+
+        .card[data-rank="Q"] .card-icon::before {
+            content: "💎";
+        }
+
+        .card[data-rank="K"] .card-icon::before {
+            content: "🗡️";
+        }
+
+        .card[data-rank="A"] .card-icon::before {
+            content: "⭐";
         }
 
         .card.hidden {
@@ -152,22 +232,37 @@
         
         <div class="cards-container" id="cardsContainer">
             <div class="card spade" data-rank="10">
+                <div class="corner-rank top-left">10<br>♠</div>
+                <div class="corner-rank bottom-right">10<br>♠</div>
+                <div class="card-icon"></div>
                 <div class="rank">10</div>
                 <div class="suit">♠</div>
             </div>
             <div class="card spade" data-rank="J">
+                <div class="corner-rank top-left">J<br>♠</div>
+                <div class="corner-rank bottom-right">J<br>♠</div>
+                <div class="card-icon"></div>
                 <div class="rank">J</div>
                 <div class="suit">♠</div>
             </div>
             <div class="card spade" data-rank="Q">
+                <div class="corner-rank top-left">Q<br>♠</div>
+                <div class="corner-rank bottom-right">Q<br>♠</div>
+                <div class="card-icon"></div>
                 <div class="rank">Q</div>
                 <div class="suit">♠</div>
             </div>
             <div class="card spade" data-rank="K">
+                <div class="corner-rank top-left">K<br>♠</div>
+                <div class="corner-rank bottom-right">K<br>♠</div>
+                <div class="card-icon"></div>
                 <div class="rank">K</div>
                 <div class="suit">♠</div>
             </div>
             <div class="card spade" data-rank="A">
+                <div class="corner-rank top-left">A<br>♠</div>
+                <div class="corner-rank bottom-right">A<br>♠</div>
+                <div class="card-icon"></div>
                 <div class="rank">A</div>
                 <div class="suit">♠</div>
             </div>
@@ -242,6 +337,9 @@
             // 카드 내용 업데이트
             cardElement.querySelector('.rank').textContent = card.rank;
             cardElement.querySelector('.suit').textContent = card.suit;
+            cardElement.querySelectorAll('.corner-rank').forEach(corner => {
+                corner.innerHTML = `${card.rank}<br>${card.suit}`;
+            });
             cardElement.setAttribute('data-rank', card.rank);
             
             // 카드 보이기
