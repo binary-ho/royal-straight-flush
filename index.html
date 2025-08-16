@@ -388,6 +388,181 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
+
+        /* 승리 축하 효과 */
+        .victory-celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2000;
+            background: radial-gradient(circle, transparent 20%, rgba(255, 215, 0, 0.1) 70%);
+        }
+
+        .victory-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4em;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b, #4ecdc4, #ffd700);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: victoryText 3s ease-in-out, victoryShimmer 2s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .victory-subtitle {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+            color: #ffd700;
+            animation: victorySubtitle 3s ease-in-out;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        @keyframes victoryText {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0) rotateY(180deg);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.3) rotateY(0deg);
+            }
+            40% {
+                transform: translate(-50%, -50%) scale(0.9) rotateY(0deg);
+            }
+            60% {
+                transform: translate(-50%, -50%) scale(1.1) rotateY(0deg);
+            }
+            80% {
+                transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+            }
+        }
+
+        @keyframes victorySubtitle {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) translateY(50px);
+            }
+            50% {
+                opacity: 0;
+                transform: translate(-50%, -50%) translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) translateY(0);
+            }
+        }
+
+        @keyframes victoryShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: fireworkExplode 2s ease-out forwards;
+        }
+
+        @keyframes fireworkExplode {
+            0% {
+                opacity: 1;
+                transform: scale(0);
+            }
+            10% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.3) translate(var(--fx), var(--fy));
+            }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            animation: confettiFall 3s linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(-100vh) rotateZ(0deg);
+            }
+            100% {
+                opacity: 0.3;
+                transform: translateY(100vh) rotateZ(720deg);
+            }
+        }
+
+        .golden-rain {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, #ffd700, transparent);
+            animation: goldenFall 2s linear forwards;
+        }
+
+        @keyframes goldenFall {
+            0% {
+                opacity: 1;
+                transform: translateY(-100vh);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh);
+            }
+        }
+
+        .victory-card-glow {
+            box-shadow: 
+                0 0 30px #ffd700,
+                0 0 60px #ffd700,
+                0 0 90px #ffd700,
+                inset 0 0 30px rgba(255, 215, 0, 0.3) !important;
+            animation: cardGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes cardGlow {
+            0%, 100% {
+                box-shadow: 
+                    0 0 30px #ffd700,
+                    0 0 60px #ffd700,
+                    0 0 90px #ffd700,
+                    inset 0 0 30px rgba(255, 215, 0, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 0 50px #ff6b6b,
+                    0 0 80px #ff6b6b,
+                    0 0 120px #ff6b6b,
+                    inset 0 0 50px rgba(255, 107, 107, 0.3);
+            }
+        }
     </style>
 </head>
 <body>
@@ -590,11 +765,140 @@
 
             if (currentCardIndex >= shuffledCards.length) {
                 status.textContent = '🎉 Royal Straight Flush 완성! 🎉';
+                triggerVictoryCelebration();
             } else {
                 status.textContent = `${currentCardIndex}/5 카드 뽑음`;
             }
 
             updateButtons();
+        }
+
+        function triggerVictoryCelebration() {
+            // 카드에 승리 글로우 효과 추가
+            const allCards = document.querySelectorAll('.card');
+            allCards.forEach(card => {
+                card.classList.add('victory-card-glow');
+            });
+
+            // 승리 축하 컨테이너 생성
+            const celebrationContainer = document.createElement('div');
+            celebrationContainer.className = 'victory-celebration';
+            celebrationContainer.id = 'victoryCelebration';
+
+            // 승리 타이틀
+            const victoryTitle = document.createElement('div');
+            victoryTitle.className = 'victory-title';
+            victoryTitle.textContent = '🏆 ROYAL STRAIGHT FLUSH! 🏆';
+            celebrationContainer.appendChild(victoryTitle);
+
+            // 승리 서브타이틀
+            const victorySubtitle = document.createElement('div');
+            victorySubtitle.className = 'victory-subtitle';
+            victorySubtitle.textContent = '⚡ 당신은 진정한 포커의 신입니다! ⚡';
+            celebrationContainer.appendChild(victorySubtitle);
+
+            document.body.appendChild(celebrationContainer);
+
+            // 폭죽 효과
+            createFireworks(celebrationContainer);
+            
+            // 컨페티 효과
+            createConfetti(celebrationContainer);
+            
+            // 황금비 효과
+            createGoldenRain(celebrationContainer);
+
+            // 5초 후 축하 효과 제거
+            setTimeout(() => {
+                celebrationContainer.remove();
+                allCards.forEach(card => {
+                    card.classList.remove('victory-card-glow');
+                });
+            }, 5000);
+        }
+
+        function createFireworks(container) {
+            const fireworkColors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#6bcf7f', '#ffd93d'];
+            
+            // 여러 위치에서 폭죽 생성
+            const fireworkPositions = [
+                { x: 20, y: 30 }, { x: 80, y: 25 }, { x: 50, y: 20 },
+                { x: 15, y: 60 }, { x: 85, y: 65 }, { x: 50, y: 70 }
+            ];
+
+            fireworkPositions.forEach((pos, index) => {
+                setTimeout(() => {
+                    for (let i = 0; i < 20; i++) {
+                        const firework = document.createElement('div');
+                        firework.className = 'firework';
+                        firework.style.background = fireworkColors[Math.floor(Math.random() * fireworkColors.length)];
+                        firework.style.left = pos.x + '%';
+                        firework.style.top = pos.y + '%';
+                        
+                        const angle = (Math.PI * 2 * i) / 20;
+                        const distance = 80 + Math.random() * 120;
+                        const fx = Math.cos(angle) * distance;
+                        const fy = Math.sin(angle) * distance;
+                        
+                        firework.style.setProperty('--fx', fx + 'px');
+                        firework.style.setProperty('--fy', fy + 'px');
+                        
+                        container.appendChild(firework);
+                        
+                        setTimeout(() => {
+                            if (firework.parentNode) {
+                                firework.remove();
+                            }
+                        }, 2000);
+                    }
+                }, index * 400);
+            });
+        }
+
+        function createConfetti(container) {
+            const confettiColors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#6bcf7f', '#ffd93d', '#ff69b4'];
+            const confettiShapes = ['🎊', '⭐', '💎', '🎉', '✨', '🌟'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                    confetti.textContent = confettiShapes[Math.floor(Math.random() * confettiShapes.length)];
+                    confetti.style.color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                    confetti.style.fontSize = (10 + Math.random() * 15) + 'px';
+                    
+                    container.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        if (confetti.parentNode) {
+                            confetti.remove();
+                        }
+                    }, 3000);
+                }, Math.random() * 2000);
+            }
+        }
+
+        function createGoldenRain(container) {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const rain = document.createElement('div');
+                    rain.className = 'golden-rain';
+                    rain.style.left = Math.random() * 100 + '%';
+                    rain.style.background = `linear-gradient(to bottom, 
+                        ${['#ffd700', '#ffed4e', '#ffc107'][Math.floor(Math.random() * 3)]}, 
+                        transparent)`;
+                    
+                    container.appendChild(rain);
+                    
+                    setTimeout(() => {
+                        if (rain.parentNode) {
+                            rain.remove();
+                        }
+                    }, 2000);
+                }, Math.random() * 1000);
+            }
         }
 
         // 초기 버튼 상태 설정
